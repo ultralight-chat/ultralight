@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "slug": "ultralight",
+    "name": "ultralight",
+    "scheme": "ultralight",
+    "plugins": [
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+    ]
+  },
+  "name": "ultralight"
+}
