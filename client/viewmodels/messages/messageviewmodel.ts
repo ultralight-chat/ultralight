@@ -9,7 +9,7 @@ import user from '../../models/user';
 import message from '../../models/message';
 import thread from '../../models/thread';
 import reaction from '../../models/reaction';
-import messageCache from './messagecache';
+import messageCache from './messagestore';
 import { useContext } from 'react';
 import { sessioncontext } from '../../components/contextprovider';
 import * as DocumentPicker from 'expo-document-picker';
