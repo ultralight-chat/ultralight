@@ -9,7 +9,16 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
-      ]
+      ],
+      "expo-build-properties",
+      {
+        "ios": {
+          "newArchEnabled": true
+        },
+        "android": {
+          "newArchEnabled": true
+        }
+      }
     ]
   },
   "name": "ultralight"

@@ -34,6 +34,7 @@
     "expo": "^49.0.23",
     "expo-application": "~5.3.0",
     "expo-auth-session": "~5.0.2",
+    "expo-build-properties": "~0.8.3",
     "expo-cli": "^4.0.17",
     "expo-clipboard": "~4.3.1",
     "expo-document-picker": "~11.5.4",
@@ -45,6 +46,7 @@
     "he": "^1.2.0",
     "intl": "^1.2.5",
     "lodash": "^4.17.21",
+    "mobx": "^6.12.3",
     "mobx-react-lite": "^4.0.7",
     "moment": "^2.29.4",
     "react": "18.2.0",
@@ -61,8 +63,7 @@
     "react-native-svg-transformer": "^1.0.0",
     "react-native-web": "~0.19.6",
     "socket.io": "^4.7.1",
-    "socket.io-client": "^4.7.1",
-    "twrnc": "^3.4.1"
+    "socket.io-client": "^4.7.1"
   },
   "extends": [
     "plugin:react-hooks/recommended"

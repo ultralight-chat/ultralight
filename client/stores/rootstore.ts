@@ -1,9 +1,12 @@
-import { nanoid } from 'nanoid';
-import createThreadStore from './threadstore';
+import { ThreadStore } from './threadstore';
+import { MessageStore } from './messagestore';
 
-export const createRootStore = () => {
-  return {
-    threadStore: createThreadStore(),
-    messageStore: createMessageStore(),
-  };
-};
+export class RootStore {
+	threadStore: ThreadStore;
+	messagestore: MessageStore;
+
+	constructor() {
+		this.threadStore = new ThreadStore(this);
+		this.messagestore = new MessageStore(this);
+	}
+}
