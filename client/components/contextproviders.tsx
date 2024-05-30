@@ -1,39 +1,23 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { RootStore } from '../stores/rootstore';
 
-const context = createContext(null);
+import thread from '../models/thread';
 
-export const SessionContextProvider = (props: any) => {
-	const [session, setSession] = useState(null);
+const Context = createContext(null);
+const StoreContext = createContext(null);
 
-	useEffect(() => {
-		const saveUser = async () => {
-			setSession(await loginViewModel().saveSession());
-		};
+export const SessionProvider = ({ children }) => {
+  const [session, setSession] = useState(null);
 
-		saveUser();
-	}, []);
-
-	return (
-		<sessioncontext.Provider value={session}>
-			{props.children}
-		</sessioncontext.Provider>
-	);
+  return <Context.Provider value={session}>{children}</Context.Provider>;
 };
 
-export const ThreadProvider = (props: any) => {
-	const [session, setThreadStore] = useState(null);
-
-	useEffect(() => {
-		const saveUser = async () => {
-			setSession(await loginViewModel().saveSession());
-		};
-
-		saveUser();
-	}, []);
-
-	return (
-		<sessioncontext.Provider value={session}>
-			{props.children}
-		</sessioncontext.Provider>
-	);
+export const StoreProvider = ({ children }) => {
+  const store = new RootStore();
+  return (
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+  );
 };
+
+export const useMessageStore = (thread: thread): RootStore =>
+  useContext(StoreContext);

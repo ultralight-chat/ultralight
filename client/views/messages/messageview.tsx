@@ -30,7 +30,7 @@ import GenericFile from '../../assets/genericfile.svg';
 import Autolink from 'react-native-autolink';
 import he from 'he';
 import message from '../../models/message';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import vm from '../../viewmodels/messages/messageviewmodel';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',

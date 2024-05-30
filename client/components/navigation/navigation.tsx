@@ -28,7 +28,7 @@ const Navigation = (props: any) => {
   const Stack = createNativeStackNavigator<Props>();
   const session = useContext(sessioncontext);
 
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets(); //Should use SafeAreaView from this library instead if possible?
 
   return (
     <NavigationContainer>
