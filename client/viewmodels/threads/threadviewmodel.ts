@@ -1,74 +1,64 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
 // import { observable, computed } from 'mobx';
 import axios from 'axios';
 
-import { Props } from '../../App';
-import threadCache from './threadcache';
+import { RouteProps } from '../../App';
 import thread from '../../models/thread';
 import { LogBox } from 'react-native';
+import { useThreadStore } from '../../components/contextproviders';
 
 LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
+	'Non-serializable values were found in the navigation state',
 ]);
 
 const threadViewModel = (session) => {
-  // const [error, setError] = useState('');
+	const threadStore = useThreadStore();
 
-  const cache = threadCache(session);
+	const getThreads = async () => {
+		await axios
+			.get(`${process.env.dev_api_server}/threads/users/${session.user.userid}`)
+			.then((response) => {
+				// setError(error);
+				threadStore.set(response.data);
+			})
+			.catch((error) => console.log(error));
+	};
 
-  // const makeObject = (param) => {
-  // 	return typeof param === 'string' ? JSON.parse(param) : param;
-  // }
+	const createThread = async (name: string, description: string) => {
+		var formData = new FormData();
+		formData.append('name', name);
+		formData.append('description', description);
+		//formData.append("iconurl", iconurl);
 
-  const getThreads = async () => {
-    await axios
-      .get(`${process.env.dev_api_server}/threads/users/${session.user.userid}`)
-      .then((response) => {
-        // setError(error);
-        cache.set(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
+		await axios({
+			method: 'post',
+			url: `${process.env.dev_api_server}/threads?createdby=${session.user.userid}`,
+			data: formData,
+			headers: { 'Content-Type': 'multipart/form-data' },
+		})
+			.then((response) => {
+				// setError(error);
+				threadStore.add(response.data);
+			})
+			.catch((error) => console.log(error));
+	};
 
-  const createThread = async (name: string, description: string) => {
-    var formData = new FormData();
-    formData.append('name', name);
-    formData.append('description', description);
-    //formData.append("iconurl", iconurl);
+	const deleteThread = async (threadid: number) => {
+		await axios
+			.patch(
+				`${process.env.dev_api_server}/threads/${threadid}&deletedby=${session.user.userid}`
+			)
+			.then((response) => {
+				// setError(error);
+				threadStore.delete(response.data);
+			})
+			.catch((error) => console.log(error));
+	};
 
-    await axios({
-      method: 'post',
-      url: `${process.env.dev_api_server}/threads?createdby=${session.user.userid}`,
-      data: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then((response) => {
-        // setError(error);
-        cache.add(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const deleteThread = async (threadid: number) => {
-    await axios
-      .patch(
-        `${process.env.dev_api_server}/threads/${threadid}&deletedby=${session.user.userid}`
-      )
-      .then((response) => {
-        // setError(error);
-        cache.delete(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  return {
-    cache,
-    getThreads,
-    createThread,
-    deleteThread,
-  };
+	return {
+		getThreads,
+		createThread,
+		deleteThread,
+	};
 };
 
 export default threadViewModel;

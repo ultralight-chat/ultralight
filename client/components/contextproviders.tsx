@@ -1,23 +1,42 @@
 import { createContext, useContext, useState } from 'react';
-import { RootStore } from '../stores/rootstore';
 
 import thread from '../models/thread';
+import { ThreadStore } from '../stores/threadstore';
+import { MessageStore } from '../stores/messagestore';
 
-const Context = createContext(null);
-const StoreContext = createContext(null);
+const SessionContext = createContext(null);
+const MessageStoreContext = createContext(null);
+const ThreadStoreContext = createContext(null);
 
 export const SessionProvider = ({ children }) => {
-  const [session, setSession] = useState(null);
+	const [session, setSession] = useState(null);
 
-  return <Context.Provider value={session}>{children}</Context.Provider>;
+	return (
+		<SessionContext.Provider value={session}>
+			{children}
+		</SessionContext.Provider>
+	);
 };
 
-export const StoreProvider = ({ children }) => {
-  const store = new RootStore();
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
+export const ThreadStoreProvider = ({ children }) => {
+	const threadStore = new ThreadStore();
+	return (
+		<ThreadStoreContext.Provider value={threadStore}>
+			{children}
+		</ThreadStoreContext.Provider>
+	);
 };
 
-export const useMessageStore = (thread: thread): RootStore =>
-  useContext(StoreContext);
+export const MessageStoreProvider = ({ thread: thread, children }) => {
+	const messageStore = new MessageStore(thread);
+	return (
+		<MessageStoreContext.Provider value={messageStore}>
+			{children}
+		</MessageStoreContext.Provider>
+	);
+};
+
+export const useSession = (): Session => useContext(SessionContext);
+export const useThreadStore = (): ThreadStore => useContext(ThreadStoreContext);
+export const useMessageStore = (thread: thread): MessageStore =>
+	useContext(MessageStoreContext);
