@@ -9,23 +9,45 @@ import { Image, View, Text, Pressable } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Props } from '../../App';
-import { sessioncontext } from '../contextprovider';
+//Models
+import thread from '../../models/thread';
+import message from '../../models/message';
+import reaction from '../../models/reaction';
 
-import { NavigationStyle } from './navigationstyle';
-
+//Views
 import Login from '../../views/login/loginview';
 import Messages from '../../views/messages/messageview';
 import Threads from '../../views/threads/threadview';
+
+//Components
+import { sessioncontext } from '../contextprovider';
+import MessageModal from '../messagelist/_modals/messagecontextmodal';
+
+//ViewModels
 import threadviewmodel from '../../viewmodels/threads/threadviewmodel';
 
+//Styles
+import { NavigationStyle } from './navigationstyle';
+
+//Assets
 import HamburgerMenu from '../assets/hamburger.svg';
-import MessageModal from '../_modals/messagemodal';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export type RouteProps = {
+  Login;
+  Messages: { thread: thread };
+  Threads;
+  MessageContext: { thread: thread; message: message; pressPosition: number };
+  ReactionUsers: { reaction: reaction };
+};
+
+export type DrawerProps = {
+  MessageHambugerMenu: { thread: thread };
+};
 
 const Navigation = (props: any) => {
-  const Stack = createNativeStackNavigator<Props>();
+  const Stack = createNativeStackNavigator<RouteProps>();
   const session = useContext(sessioncontext);
 
   const insets = useSafeAreaInsets(); //Should use SafeAreaView from this library instead if possible?
@@ -44,7 +66,6 @@ const Navigation = (props: any) => {
             <Stack.Screen
               name="Threads"
               component={Threads}
-              initialParams={{ vm: threadviewmodel(session) }}
               options={() => ({
                 headerShown: true,
                 headerStyle: {

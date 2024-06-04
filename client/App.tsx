@@ -4,8 +4,8 @@ import { LogBox, StyleSheet } from 'react-native';
 import { Navigation } from './components/navigation/navigation';
 
 import {
-	SafeAreaProvider,
-	useSafeAreaInsets,
+  SafeAreaProvider,
+  useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
 import { SessionProvider } from './components/contextproviders';
@@ -15,32 +15,20 @@ import message from './models/message';
 import reaction from './models/reactionAgg';
 
 LogBox.ignoreLogs([
-	'Non-serializable values were found in the navigation state',
+  'Non-serializable values were found in the navigation state',
 ]);
 
 const App = () => {
-	//const Drawer = createDrawerNavigator<DrawerProps>();
-	// const navigation = useNavigation();
+  //const Drawer = createDrawerNavigator<DrawerProps>();
+  // const navigation = useNavigation();
 
-	return (
-		<SafeAreaProvider>
-			<SessionProvider>
-				<Navigation></Navigation>
-			</SessionProvider>
-		</SafeAreaProvider>
-	);
-};
-
-export type RouteProps = {
-	Login;
-	Messages: { thread: thread };
-	Threads;
-	MessageContext: { message: message; pressPosition: number };
-	ReactionUsers: { reaction: reaction };
-};
-
-export type DrawerProps = {
-	MessageHambugerMenu: { thread: thread };
+  return (
+    <SafeAreaProvider>
+      <SessionProvider>
+        <Navigation></Navigation>
+      </SessionProvider>
+    </SafeAreaProvider>
+  );
 };
 
 export default App;

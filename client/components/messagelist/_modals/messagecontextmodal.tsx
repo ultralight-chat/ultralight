@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 import {
   Alert,
   useWindowDimensions,
@@ -9,32 +9,32 @@ import {
   View,
   LogBox,
   Platform,
-} from "react-native";
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import * as Clipboard from 'expo-clipboard';
+import he from 'he';
 
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import * as Clipboard from "expo-clipboard";
+import thread from '../../../models/thread';
 
-import { sessioncontext } from "../contextprovider";
-import { Props } from "../../App";
-import messageviewmodel from "../../viewmodels/messages/messageviewmodel";
+import { sessioncontext } from '../../contextprovider';
 
-import AddIcon from "../../assets/addicon.svg";
-import ReplyIcon from "../../assets/replyicon.svg";
-import CopyIcon from "../../assets/copyicon.svg";
-import EditIcon from "../../assets/editicon.svg";
-import DeleteIcon from "../../assets/deleteicon.svg";
-import QuoteIcon from "../../assets/quoteicon.svg";
-import he from "he";
+import vm from '../../../viewmodels/messages/messageviewmodel';
 
-LogBox.ignoreLogs([
-  "Non-serializable values were found in the navigation state",
-]);
+import AddIcon from '../../assets/addicon.svg';
+import ReplyIcon from '../../assets/replyicon.svg';
+import CopyIcon from '../../assets/copyicon.svg';
+import EditIcon from '../../assets/editicon.svg';
+import DeleteIcon from '../../assets/deleteicon.svg';
+import QuoteIcon from '../../assets/quoteicon.svg';
 
-type routeType = NativeStackScreenProps<Props, "MessageContext">;
+import { RouteProps } from '../../../components/navigation/navigation';
 
-const MessageModal = ({ route, navigation }: routeType) => {
-  const { thread, deleteMessage, react } = route.params.vm;
-  const { message } = route.params;
+type routeType = NativeStackScreenProps<RouteProps, 'MessageContext'>;
+
+const MessageContextModal = ({ route, navigation }: routeType) => {
+  const { thread, message } = route.params;
+
+  const { deleteMessage, react } = vm(thread);
 
   const session = useContext(sessioncontext);
 
@@ -48,23 +48,23 @@ const MessageModal = ({ route, navigation }: routeType) => {
   const reactions = [
     {
       id: 1,
-      reaction: "❤️",
+      reaction: '❤️',
     },
     {
       id: 2,
-      reaction: "🙂",
+      reaction: '🙂',
     },
     {
       id: 3,
-      reaction: "☹️",
+      reaction: '☹️',
     },
     {
       id: 4,
-      reaction: "🔥",
+      reaction: '🔥',
     },
     {
       id: 5,
-      reaction: "👍",
+      reaction: '👍',
     },
     {
       id: 6,
@@ -83,7 +83,7 @@ const MessageModal = ({ route, navigation }: routeType) => {
   const actions = [
     {
       id: 1,
-      title: "Reply",
+      title: 'Reply',
       element: (
         <ReplyIcon
           style={{
@@ -94,19 +94,14 @@ const MessageModal = ({ route, navigation }: routeType) => {
         />
       ),
       action: async () => {
-        navigation.navigate("Messages", {
+        navigation.navigate('Messages', {
           thread: thread,
-          vm: route.params.vm,
-          quotedmessage: null,
-          parentmessage: message,
-          updatemessage: null,
-          user: session.user,
         });
       },
     },
     {
       id: 2,
-      title: "Quote",
+      title: 'Quote',
       element: (
         <QuoteIcon
           style={{
@@ -117,19 +112,14 @@ const MessageModal = ({ route, navigation }: routeType) => {
         />
       ),
       action: async () => {
-        navigation.navigate("Messages", {
+        navigation.navigate('Messages', {
           thread: thread,
-          vm: route.params.vm,
-          quotedmessage: message,
-          parentmessage: null,
-          updatemessage: null,
-          user: session.user,
         });
       },
     },
     {
       id: 3,
-      title: "Edit",
+      title: 'Edit',
       element: (
         <EditIcon
           style={{
@@ -140,19 +130,14 @@ const MessageModal = ({ route, navigation }: routeType) => {
         />
       ),
       action: async () => {
-        navigation.navigate("Messages", {
+        navigation.navigate('Messages', {
           thread: thread,
-          vm: route.params.vm,
-          quotedmessage: null,
-          parentmessage: null,
-          updatemessage: message,
-          user: session.user,
         });
       },
     },
     {
       id: 4,
-      title: "Delete",
+      title: 'Delete',
       element: (
         <DeleteIcon
           style={{
@@ -162,13 +147,13 @@ const MessageModal = ({ route, navigation }: routeType) => {
         />
       ),
       action: () => {
-        deleteMessage(thread, message);
+        deleteMessage(message);
         navigation.goBack();
       },
     },
     {
       id: 5,
-      title: "Copy",
+      title: 'Copy',
       element: (
         <CopyIcon
           style={{
@@ -201,12 +186,12 @@ const MessageModal = ({ route, navigation }: routeType) => {
         style={{
           flex: 1,
           marginBottom: 75,
-          alignItems: "stretch",
-          flexDirection: "column",
+          alignItems: 'stretch',
+          flexDirection: 'column',
         }}
       >
         <Pressable
-          style={{ flexGrow: 1, height: "100%" }} //Empty space. Press to go back.
+          style={{ flexGrow: 1, height: '100%' }} //Empty space. Press to go back.
           onPress={async () => {
             navigation.goBack();
           }}
@@ -215,29 +200,29 @@ const MessageModal = ({ route, navigation }: routeType) => {
         </Pressable>
         <View
           style={{
-            backgroundColor: "#374151",
+            backgroundColor: '#374151',
             height: 52,
-            width: "90%",
-            position: "absolute",
-            marginHorizontal: "5%",
+            width: '90%',
+            position: 'absolute',
+            marginHorizontal: '5%',
             marginTop:
               route.params.pressPosition - 10 > minReactionBottom
                 ? minReactionBottom
                 : route.params.pressPosition - 10 < maxReactionTop
                 ? maxReactionTop
                 : route.params.pressPosition - 10,
-            marginBottom: "auto",
+            marginBottom: 'auto',
             borderRadius: 10,
             shadowRadius: 10,
-            justifyContent: "space-evenly",
-            flexDirection: "row",
+            justifyContent: 'space-evenly',
+            flexDirection: 'row',
             zIndex: 1,
           }}
         >
           <FlatList
             contentContainerStyle={{
               flexGrow: 1,
-              justifyContent: "space-evenly",
+              justifyContent: 'space-evenly',
               marginBottom: 7,
               marginTop: 3,
             }}
@@ -253,7 +238,7 @@ const MessageModal = ({ route, navigation }: routeType) => {
                 }}
               >
                 {item.element}
-                <Text style={{ color: "white", fontSize: 32 }}>
+                <Text style={{ color: 'white', fontSize: 32 }}>
                   {item.reaction}
                 </Text>
               </Pressable>
@@ -272,19 +257,19 @@ const MessageModal = ({ route, navigation }: routeType) => {
 
       <View
         style={{
-          backgroundColor: "#374151",
+          backgroundColor: '#374151',
           height: 75,
-          width: "100%",
+          width: '100%',
           bottom: 0,
-          position: "absolute",
+          position: 'absolute',
           flex: 1,
-          justifyContent: "space-evenly",
-          flexDirection: "row",
+          justifyContent: 'space-evenly',
+          flexDirection: 'row',
         }}
       >
         <FlatList
           contentContainerStyle={{
-            justifyContent: "space-evenly",
+            justifyContent: 'space-evenly',
             flexGrow: 1,
             paddingBottom: 9,
           }}
@@ -296,14 +281,14 @@ const MessageModal = ({ route, navigation }: routeType) => {
             <View
               style={{
                 flex: 1,
-                flexDirection: "column",
-                alignItems: "center",
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
             >
               <View style={{ flexGrow: 1 }}></View>
               <Pressable onPress={item.action}>
                 {item.element}
-                <Text style={{ color: "white", fontSize: 14 }}>
+                <Text style={{ color: 'white', fontSize: 14 }}>
                   {item.title}
                 </Text>
               </Pressable>
@@ -321,4 +306,4 @@ const MessageModal = ({ route, navigation }: routeType) => {
   );
 };
 
-export default MessageModal;
+export default MessageContextModal;

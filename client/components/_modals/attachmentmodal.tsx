@@ -1,14 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Props } from "../../App";
 import { useContext } from "react";
 import { sessioncontext } from "../contextprovider";
 import { Modal, Pressable, View } from "react-native";
 
-type routeType = NativeStackScreenProps<Props, "MessageContext">;
+import { RouteProps } from "../navigation/navigation";
+
+type routeType = NativeStackScreenProps<RouteProps, "MessageContext">;
 
 const AttachmentModal = ({ route, navigation }: routeType) => {
-  const { thread, attachment } = route.params.vm;
-  const { message } = route.params;
 
   const session = useContext(sessioncontext);
 
