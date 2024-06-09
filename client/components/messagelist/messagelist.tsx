@@ -1,23 +1,22 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, Image, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Observer, observer } from 'mobx-react-lite';
 import { FlashList } from '@shopify/flash-list';
 
 //models
-import message from '../../models/message';
+import { message } from '../../models/message';
 
 //views
 
 //components
-import { useMessageStore, useSession } from '../contextproviders';
+import { useMessageStore } from '../../stores/messagestore';
+import { useUserStore } from '../../stores/userStore';
+import { useSession } from '../contextproviders';
 import Message from '../../components/messagelist/message';
-import { DateHeader } from './dateheader';
 
 //viewmodels
 import vm from '../../viewmodels/messages/messageviewmodel';
-
-//styles
 
 //assets
 
@@ -31,21 +30,21 @@ const MessageList = ({ route, navigation }: routeType) => {
   const { getMessages } = vm(thread);
 
   const session = useSession();
-  const messageStore = useMessageStore(thread);
+  const messageStore = useMessageStore();
+  const user = useUserContext();
 
   const [lastmessageid, setlastmessageid] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getMessages(thread, messageStore.messages.slice(-1)[0]?.messageid || 0, 0);
+    getMessages(0, 0);
   }, [lastmessageid]);
 
-  const fetchMore = () => {
+  const fetchMore = (parentMessage?: message) => {
     if (!isLoading && lastmessageid)
       getMessages(
-        thread,
-        messageStore.messages.slice(-1)[0]?.messageid || 0,
-        0
+        messageStore.messages.get(thread)?.slice(-1)[0]?.messageid || 0,
+        parentMessage?.messageid ?? 0
       );
   };
 
@@ -56,8 +55,8 @@ const MessageList = ({ route, navigation }: routeType) => {
           //bounces={false}
           scrollEnabled={true}
           overScrollMode={'never'}
-          data={messageStore.messages}
-          extraData={messageStore.messages}
+          data={messageStore.messages.get(thread)}
+          extraData={messageStore.messages.get(thread)}
           inverted={true}
           estimatedItemSize={80}
           onEndReachedThreshold={0.9}
@@ -69,16 +68,9 @@ const MessageList = ({ route, navigation }: routeType) => {
           }
           refreshing={isLoading}
           keyExtractor={(item: message) => String(item.messageid)}
-          renderItem={({ item, index }) => {
+          renderItem={({ item, index, extraData }) => {
             return (
               <>
-                {item.lastmessagecreateddatediff ? (
-                  <DateHeader
-                    item={item.createddate}
-                    index={index}
-                    separators={null}
-                  />
-                ) : null}
                 <Pressable
                   delayLongPress={300}
                   onLongPress={(e) => {
@@ -108,5 +100,7 @@ const MessageList = ({ route, navigation }: routeType) => {
     </Observer>
   );
 };
+
+const MessageListStyle = StyleSheet.create({});
 
 export default MessageList;

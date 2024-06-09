@@ -1,16 +1,20 @@
-import reaction from './reactionAgg';
+import { DocumentPickerAsset } from 'expo-document-picker';
+
 import attachment from '../models/attachment';
 import tag from './reactionAgg';
-import thread from './thread';
-import user from './user';
-import reactionAgg from './reactionAgg';
+import { user } from './user';
 
-export default interface message {
+export interface message {
   messageid: number;
   threadid: number;
   parentid: number;
   message: string;
-  reactions: reactionAgg[];
+  quotedmessage: message;
+  reactions: {
+    reactiontype: string;
+    reactioncount: number;
+    reacted: boolean;
+  }[];
   attachments: attachment[];
   tags: tag[];
   createddate: Date;
@@ -19,7 +23,12 @@ export default interface message {
   modifiedby: number;
   deleteddate: Date;
   deletedby: number;
-  lastmessagecreatedbyid: number;
+  lastreadusers: user[];
+  lastmessagecreatedby: number;
   lastmessagecreateddatediff: number;
-  quotedmessage: message;
+}
+
+export interface draftMessage extends Omit<message, 'attachments'> {
+  updatedMessage: string;
+  attachments: DocumentPickerAsset[];
 }

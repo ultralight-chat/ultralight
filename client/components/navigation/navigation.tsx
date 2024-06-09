@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 //Models
 import thread from '../../models/thread';
-import message from '../../models/message';
+import { message } from '../../models/message';
 import reaction from '../../models/reaction';
 
 //Views

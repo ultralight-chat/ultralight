@@ -5,5 +5,6 @@ export default interface threadmember {
   removeddate: Date;
   removedby: number;
   nickname: string;
+  profileimageuri: string;
   lastreadmessageid: number;
 }

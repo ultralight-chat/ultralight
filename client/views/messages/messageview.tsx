@@ -9,7 +9,8 @@ import {
   LogBox,
   FlatList,
 } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
+
+import { DocumentPickerAsset, getDocumentAsync } from 'expo-document-picker';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Observer } from 'mobx-react-lite';
@@ -18,9 +19,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Autolink from 'react-native-autolink';
 import he from 'he';
 
-import message from '../../models/message';
+import { message, draftMessage } from '../../models/message';
 
-import { MessageStoreProvider } from '../../components/contextproviders';
+import { MessageStoreProvider } from '../../stores/messagestore';
 import MessageList from '../../components/messagelist/messagelist';
 
 import vm from '../../viewmodels/messages/messageviewmodel';
@@ -48,7 +49,10 @@ const MessageView = ({ route, navigation }: routeType) => {
     endTyping,
   } = vm(thread);
 
-  const [selectedMessage, setSeletedMessage] = useState<message>(null);
+  const [draftMessage, setDraftMessage] = useState<draftMessage>(
+    {} as draftMessage
+  );
+  const [typing, setTyping] = useState(false);
 
   return (
     <Observer>
@@ -58,10 +62,10 @@ const MessageView = ({ route, navigation }: routeType) => {
           style={messagesviewstyle.Background}
         >
           <View style={{ flex: 1 }}>
-            <MessageStoreProvider thread={thread}>
+            <MessageStoreProvider rootStore={null}>
               <MessageList route={route} navigation={navigation} />
             </MessageStoreProvider>
-            {selectedMessage.quotedmessage ? (
+            {draftMessage.quotedmessage ? (
               <View
                 style={{
                   alignSelf: 'flex-start',
@@ -71,9 +75,9 @@ const MessageView = ({ route, navigation }: routeType) => {
                 }}
               >
                 <Pressable
-                  onPress={() => {
-                    selectedMessage.quotedmessage = null;
-                  }}
+                  onPress={() =>
+                    setDraftMessage({ ...draftMessage, quotedmessage: null })
+                  }
                 >
                   <CancelIcon
                     style={{
@@ -87,15 +91,15 @@ const MessageView = ({ route, navigation }: routeType) => {
                 <Autolink
                   style={[
                     MessageViewStyle.QuotedMessage,
-                    selectedMessage.quotedmessage?.deletedby != null
+                    draftMessage.quotedmessage?.deletedby != null
                       ? MessageViewStyle.Deleted
                       : { color: 'white' },
                   ]}
                   stripTrailingSlash={false}
                   stripPrefix={false}
                   text={
-                    selectedMessage.quotedmessage?.message
-                      ? he.decode(selectedMessage.quotedmessage.message)
+                    draftMessage.quotedmessage?.message
+                      ? he.decode(draftMessage.quotedmessage.message)
                       : ''
                   }
                 ></Autolink>
@@ -112,11 +116,14 @@ const MessageView = ({ route, navigation }: routeType) => {
             >
               <Pressable
                 onPress={() => {
-                  DocumentPicker.getDocumentAsync({
+                  getDocumentAsync({
                     multiple: true,
-                  }).then((results) => {
-                    selectedMessage.addattachments(results.assets);
-                  });
+                  }).then((results) =>
+                    setDraftMessage({
+                      ...draftMessage,
+                      attachments: results.assets,
+                    })
+                  );
                 }}
               >
                 <AttachmentIcon
@@ -147,20 +154,22 @@ const MessageView = ({ route, navigation }: routeType) => {
                   multiline={true}
                   placeholder="Message"
                   placeholderTextColor="white"
-                  value={selectedMessage.message}
+                  value={draftMessage.message}
                   onChangeText={(message) => {
                     message.length > 0 ? startTyping() : endTyping();
-                    selectedMessage.set(message);
+                    setDraftMessage({ ...draftMessage, message: message });
                   }}
                 />
               </View>
 
-              {selectedMessage.updatedmessage ? (
+              {draftMessage.updatedMessage ? (
                 <Pressable
                   onPress={() => {
-                    updateMessage(newMessage);
-                    endTyping(thread);
-                    selectedMessage.reset();
+                    updateMessage({
+                      ...draftMessage,
+                      message: draftMessage.updatedMessage,
+                    });
+                    setDraftMessage({} as draftMessage);
                   }}
                 >
                   <EditIcon
@@ -175,8 +184,8 @@ const MessageView = ({ route, navigation }: routeType) => {
               ) : (
                 <Pressable
                   onPress={() => {
-                    createMessage({});
-
+                    createMessage(draftMessage);
+                    setDraftMessage({} as draftMessage);
                     endTyping();
                   }}
                 >
@@ -192,7 +201,7 @@ const MessageView = ({ route, navigation }: routeType) => {
               )}
             </View>
           </View>
-          {selectedMessage.attachments.length > 0 ? (
+          {draftMessage.attachments?.length > 0 ? (
             <FlatList
               style={{
                 maxHeight: 60,
@@ -202,11 +211,11 @@ const MessageView = ({ route, navigation }: routeType) => {
               }}
               scrollEnabled={true}
               horizontal={true}
-              data={selectedMessage.attachments}
+              data={draftMessage.attachments}
               keyExtractor={(item) => item.uri}
               renderItem={({ index, item }) => (
                 <View style={{ alignItems: 'center', width: 60 }}>
-                  {item.mimeType.startsWith('image') ? (
+                  {item.mimeType?.startsWith('image') ? (
                     <Image
                       style={{
                         width: 45,
@@ -242,7 +251,7 @@ const MessageView = ({ route, navigation }: routeType) => {
                       right: 1,
                       top: 3,
                     }}
-                    onPress={() => selectedMessage.removeAttachment(index)}
+                    // onPress={() => draftMessage.removeAttachment(index)}
                   >
                     <CancelIcon />
                   </Pressable>

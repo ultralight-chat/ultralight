@@ -68,6 +68,8 @@ const loginViewModel = () => {
     }
   };
 
+  const getLoggedInUserProfile = () => {};
+
   return { saveSession };
 };
 

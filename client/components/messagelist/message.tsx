@@ -17,13 +17,14 @@ import Autolink from 'react-native-autolink';
 import moment from 'moment';
 import he from 'he';
 
-import message from '../../models/message';
+import { message } from '../../models/message';
 
 import Attachment from './attachment';
 
 import vm from '../../viewmodels/messages/messageviewmodel';
 
 import { RouteProps } from '../../components/navigation/navigation';
+import { LastReadList } from './lastreadlist';
 
 type routeType = NativeStackScreenProps<RouteProps, 'Messages'>;
 
@@ -48,7 +49,7 @@ const Message: ListRenderItem<message> = ({ item }) => {
             item.parentid === 0 ? messageStyle.Parent : messageStyle.Child,
           ]}
         >
-          {item.lastmessagecreatedbyid != item.createdby ? (
+          {item.lastmessagecreatedby != item.createdby ? (
             <Image
               style={messageStyle.ProfileImageStandard}
               resizeMode="cover"
@@ -64,7 +65,7 @@ const Message: ListRenderItem<message> = ({ item }) => {
           <View style={{ flex: 1, flexDirection: 'column' }}>
             {item.quotedmessage ? (
               <View style={{ marginBottom: 1 }}>
-                {item.lastmessagecreatedbyid != item.createdby ? (
+                {item.lastmessagecreatedby != item.createdby ? (
                   <View
                     style={{
                       flex: 1,
@@ -117,7 +118,7 @@ const Message: ListRenderItem<message> = ({ item }) => {
               </View>
             ) : (
               <>
-                {item.lastmessagecreatedbyid != item.createdby ? (
+                {item.lastmessagecreatedby != item.createdby ? (
                   <View
                     style={{ flex: 1, paddingLeft: 10, flexDirection: 'row' }}
                   >
@@ -216,9 +217,9 @@ const Message: ListRenderItem<message> = ({ item }) => {
                               react(messageItem, item.reactiontype);
                             }}
                             onLongPress={() => {
-                              navigation.navigate('ReactionUsers', {
-                                reaction: item,
-                              });
+                              //   navigation.navigate('ReactionUsers', {
+                              //     reaction: item,
+                              //   });
                             }}
                           >
                             <Text style={{ fontSize: 16 }}>
@@ -231,7 +232,7 @@ const Message: ListRenderItem<message> = ({ item }) => {
                                 color: 'white',
                               }}
                             >
-                              {item.users.length}
+                              {item.reactioncount}
                             </Text>
                           </Pressable>
                         )}
@@ -241,47 +242,7 @@ const Message: ListRenderItem<message> = ({ item }) => {
                 ) : null}
               </View>
             ) : null}
-            {item.lastread.every((lr) =>
-              [user.userid, item.createdby].includes(lr.userid)
-            ) ? null : (
-              <Pressable
-                style={{
-                  height: 20,
-                }}
-                onPress={null}
-              >
-                <Observer>
-                  {() => (
-                    <FlatList
-                      style={{
-                        flex: 1,
-                        height: 20,
-                        marginTop: -20,
-                        marginRight: 5,
-                      }}
-                      scrollEnabled={false}
-                      horizontal={true}
-                      inverted={true}
-                      data={item.lastread}
-                      keyExtractor={(item) => item.userid.toString()}
-                      renderItem={({ item }) => (
-                        <>
-                          {item.userid != messageItem.createdby &&
-                          item.userid != user.userid ? (
-                            <Image
-                              style={messageStyle.ProfileImageSmall}
-                              source={{
-                                uri: item.profileimage,
-                              }}
-                            />
-                          ) : null}
-                        </>
-                      )}
-                    ></FlatList>
-                  )}
-                </Observer>
-              </Pressable>
-            )}
+            <LastReadList lastreadusers={item.lastreadusers} />
           </View>
         </View>
       )}
@@ -356,15 +317,6 @@ const messageStyle = StyleSheet.create({
     marginTop: 6,
     borderRadius: 40,
     overflow: 'hidden',
-  },
-  ProfileImageSmall: {
-    height: 18,
-    width: 18,
-    marginHorizontal: 1,
-    borderRadius: 10,
-    overflow: 'hidden',
-    resizeMode: 'cover',
-    alignSelf: 'center',
   },
 });
 

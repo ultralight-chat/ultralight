@@ -1,13 +1,16 @@
-import { makeAutoObservable } from 'mobx';
+import { createContext, useContext, useState } from 'react';
+import { ObservableMap, makeAutoObservable } from 'mobx';
 
 import { RootStore } from './rootstore';
 import thread from '../models/thread';
 
 export class ThreadStore {
+  rootStore: RootStore;
   threads: thread[];
-  isLoading = true;
 
-  constructor() {
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
+    this.threads = [] as thread[];
     makeAutoObservable(this);
   }
 
@@ -38,3 +41,17 @@ export class ThreadStore {
     oldthread.unreadcount = 0;
   }
 }
+
+const ThreadStoreContext = createContext(null);
+
+export const ThreadStoreProvider = ({ rootStore, children }) => {
+  const [threadStore] = useState(new ThreadStore(rootStore));
+
+  return (
+    <ThreadStoreContext.Provider value={threadStore}>
+      {children}
+    </ThreadStoreContext.Provider>
+  );
+};
+
+export const useThreadStore = (): ThreadStore => useContext(ThreadStoreContext);
