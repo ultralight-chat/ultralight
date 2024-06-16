@@ -44,6 +44,7 @@ export const UserStoreProvider = ({ rootStore, children }) => {
   const [userStore, setUserStore] = useState<UserStore>(null);
   const [loggedInUser, setLoggedInUser] = useState<user>(null);
 
+  if (!loggedInUser) setLoggedInUser(login());
   if (!UserStore) setUserStore(new UserStore(rootStore, loggedInUser));
 
   return (

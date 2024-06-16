@@ -1,7 +1,7 @@
 import checkAPIs from 'express-validator';
 const { body, check, validationResult } = checkAPIs;
 
-export const createMessage  = [
+export const createMessage = [
   check('threadid')
     .trim()
     .isInt()
@@ -32,17 +32,17 @@ export const createMessage  = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const getMessages = [
   check('messageid')
-  .trim()
-  .isInt()
-  .bail()
-  .withMessage('messageid must be an integer!'),
+    .trim()
+    .isInt()
+    .bail()
+    .withMessage('messageid must be an integer!'),
   check('threadid')
     .trim()
     .isInt()
@@ -61,9 +61,9 @@ export const getMessages = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const getConversations = [
@@ -75,9 +75,9 @@ export const getConversations = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const getAttachment = [
@@ -122,9 +122,9 @@ export const deleteMessage = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const updateMessage = [
@@ -162,9 +162,9 @@ export const updateMessage = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const react = [
@@ -196,9 +196,9 @@ export const react = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const deleteReaction = [
@@ -230,9 +230,9 @@ export const deleteReaction = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];
 
 export const addTopic = [
@@ -247,10 +247,10 @@ export const addTopic = [
     .bail()
     .withMessage('messageid must be an integer!'),
   check('topicid')
-  .trim()
-  .isInt()
-  .bail()
-  .withMessage('topicid must be an integer!'),
+    .trim()
+    .isInt()
+    .bail()
+    .withMessage('topicid must be an integer!'),
   check('addedby')
     .trim()
     .isInt()
@@ -259,7 +259,7 @@ export const addTopic = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({errors: errors.array()});
+      return res.status(422).json({ errors: errors.array() });
     next();
-  }
+  },
 ];

@@ -1,5 +1,6 @@
-// config file
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // postgres
 import pg from 'pg';
@@ -16,20 +17,22 @@ import { S3Client } from '@aws-sdk/client-s3';
 // import PQueue from "p-queue";
 
 // routes
-import appRouter from './routes/app.js';
+import authRouter from './routes/auth.js';
 import userRouter from './routes/user.js';
 import threadRouter from './routes/thread.js';
 import messageRouter from './routes/message.js';
 
 // passport
 import passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth2';
 import { verifytoken } from './middleware/auth.js';
 
 // socket.io
 import { Server } from 'socket.io';
 
-dotenv.config({ path: './config/.env' });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: `${__dirname}/.env` });
 
 const pool = new pg.Pool({
   user: process.env.db_dev_user,
@@ -37,8 +40,7 @@ const pool = new pg.Pool({
   password: process.env.db_dev_password,
   port: process.env.db_dev_port,
   host: process.env.db_dev_host,
-  // ssl: { rejectUnauthorized: false }
-  ssl: false,
+  ssl: { rejectUnauthorized: false },
 });
 
 const app = express();
@@ -47,10 +49,10 @@ app.use(cors({ origin: '*' }));
 // passport initialization
 app.use(
   session({
-    secret: process.env.google_secret,
+    secret: process.env.google_secret, //TODO: Provide different secret
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: false }, //Set to true when https enabled
   })
 );
 
@@ -119,7 +121,7 @@ const io = new Server(server, {
   },
 });
 
-app.use('/', appRouter);
+app.use('/', authRouter);
 app.use('/', userRouter);
 app.use('/', threadRouter);
 app.use('/', messageRouter);

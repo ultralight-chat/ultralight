@@ -8,6 +8,7 @@ import {
   Pressable,
   LogBox,
   StyleSheet,
+  ListRenderItemInfo,
 } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -19,6 +20,7 @@ import he from 'he';
 
 import { message } from '../../models/message';
 
+import { useUserContext } from '../../stores/userStore';
 import Attachment from './attachment';
 
 import vm from '../../viewmodels/messages/messageviewmodel';
@@ -28,11 +30,15 @@ import { LastReadList } from './lastreadlist';
 
 type routeType = NativeStackScreenProps<RouteProps, 'Messages'>;
 
-const Message: ListRenderItem<message> = ({ item }) => {
+const Message: ListRenderItem<message> = ({
+  item,
+}: ListRenderItemInfo<message>) => {
   const route = useRoute<routeType['route']>();
   const navigation = useNavigation<routeType['navigation']>();
 
   const { thread } = route.params;
+
+  const loggedInUser = useUserContext();
 
   const messageItem = item; //used to distinguish between nested items/flatlists
 
@@ -54,9 +60,9 @@ const Message: ListRenderItem<message> = ({ item }) => {
               style={messageStyle.ProfileImageStandard}
               resizeMode="cover"
               source={{
-                uri: item.createdbyprofileimage
-                  ? item.createdbyprofileimage
-                  : 'https://i.imgur.com/FwPobTp.png',
+                uri: item
+                  ? item.profileimageuri
+                  : 'https://i.imgur.com/FwPobTp.png', // TODO: replace
               }}
             />
           ) : (
@@ -84,11 +90,11 @@ const Message: ListRenderItem<message> = ({ item }) => {
                       ]}
                     >
                       {`${
-                        item.quotedmessage.createdby === user.userid
+                        item.quotedmessage.createdby === loggedInUser.userid
                           ? 'You'
                           : item.quotedmessage.createdbyname
                       } replied to ${
-                        item.quotedmessage.createdby == user.userid
+                        item.quotedmessage.createdby == loggedInUser.userid
                           ? 'you'
                           : item.createdbyname
                       }`}
@@ -145,7 +151,9 @@ const Message: ListRenderItem<message> = ({ item }) => {
                 messageStyle.Message,
                 {
                   backgroundColor:
-                    item.createdby === user.userid ? '#457995' : '#374151',
+                    item.createdby === loggedInUser.userid
+                      ? '#457995'
+                      : '#374151',
                 },
               ]}
               stripTrailingSlash={false}

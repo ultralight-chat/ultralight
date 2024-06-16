@@ -11,7 +11,7 @@ import { message } from '../../models/message';
 
 //components
 import { useMessageStore } from '../../stores/messagestore';
-import { useUserStore } from '../../stores/userStore';
+import { useUserContext } from '../../stores/userStore';
 import { useSession } from '../contextproviders';
 import Message from '../../components/messagelist/message';
 
@@ -31,7 +31,6 @@ const MessageList = ({ route, navigation }: routeType) => {
 
   const session = useSession();
   const messageStore = useMessageStore();
-  const user = useUserContext();
 
   const [lastmessageid, setlastmessageid] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +67,7 @@ const MessageList = ({ route, navigation }: routeType) => {
           }
           refreshing={isLoading}
           keyExtractor={(item: message) => String(item.messageid)}
-          renderItem={({ item, index, extraData }) => {
+          renderItem={({ item, index }) => {
             return (
               <>
                 <Pressable

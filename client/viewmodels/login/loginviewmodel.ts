@@ -2,12 +2,14 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeAutoObservable } from 'mobx';
-import user from '../../models/user';
+import { user } from '../../models/user';
 import { Platform } from 'react-native';
 import { io } from 'socket.io-client';
 
 const loginViewModel = () => {
   // const [error, setError] = useState('');
+
+  const authenticate = async () => {};
   const saveSession = async () => {
     // if (window.document.cookie) {
     //     try {
@@ -50,8 +52,7 @@ const loginViewModel = () => {
           userid: 1,
           firstname: 'Admin',
           lastname: 'Admin',
-          nickname: '',
-          profileimage: '',
+          profileimageuri: '',
         } as user,
       };
     } else {
@@ -61,16 +62,13 @@ const loginViewModel = () => {
           userid: 1,
           firstname: 'Admin',
           lastname: 'Admin',
-          nickname: '',
-          profileimage: '',
+          profileimageuri: '',
         } as user,
       };
     }
   };
 
-  const getLoggedInUserProfile = () => {};
-
-  return { saveSession };
+  return { saveSession, authenticate };
 };
 
 export default loginViewModel;

@@ -19,6 +19,8 @@ export interface message {
   tags: tag[];
   createddate: Date;
   createdby: number;
+  createdbyname: string;
+  profileimageuri: string;
   modifieddate: Date;
   modifiedby: number;
   deleteddate: Date;
