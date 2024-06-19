@@ -9,7 +9,7 @@ import userAuth from '../controllers/auth.js';
 const router = new Router();
 
 router
-  .get('/auth/google', userAuth.authenticate)
-  .get('/auth/google/callback', v.auth, userAuth.createToken);
+  .get('/auth/google', userAuth.authPrompt)
+  .get('/auth/google/callback', v.auth, userAuth.authCallback);
 
 export default router;
